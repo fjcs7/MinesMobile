@@ -1,7 +1,8 @@
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import params from './src/params'
+import Field from './src/componentes/Field'
 
 export default class App extends Component {
   render() {
@@ -9,6 +10,7 @@ export default class App extends Component {
       <View style={styles.container}>
         <Text style={styles.welcome}>Iniciando o Mines!</Text>
         <Text style={styles.instructions}>Tamanho da grade: {params.getRowsAmount()} x {params.getColumnsAmount()}</Text>
+        <Field />
       </View>
     );
   }
