@@ -1,10 +1,16 @@
 
 import React, {Component} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Alert} from 'react-native';
 import params from './src/params'
-import Field from './src/componentes/Field'
 import MineField from './src/componentes/MineFields'
-import { createMinedBoard } from './src/functions'
+import { 
+  createMinedBoard, 
+  cloneBoard,
+  openField,
+  wonGame,
+  showMines,
+  hadExplosion
+ } from './src/functions'
 export default class App extends Component {
   
   constructor(props){
@@ -22,19 +28,41 @@ export default class App extends Component {
     const rows = params.getRowsAmount()
     const cols = params.getColumnsAmount()
     return {
-      board: createMinedBoard(rows,cols, this.minesAmount())
+      board: createMinedBoard(rows,cols, this.minesAmount()),
+      won: false,
+      lost: false
     }
+  }
+
+  onOpenField = (row, column) => {
+    const board = cloneBoard(this.state.board)
+    openField(board, row, column)
+    const lost = hadExplosion(board)
+    const won = wonGame(board)
+
+    if (lost) {
+      showMines(board)
+      Alert.alert('Perdeu!!!', 'Opps!!! Clicou aonde não devia!!')
+    }
+
+    if (won) {
+      Alert('Parabéns!', 'Se esquivou de todas as Minas! xD')
+    }
+
+    this.setState({board, lost, won})
   }
   
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Iniciando o Mines!</Text>
-        <Text style={styles.instructions}>Tamanho da grade: {params.getRowsAmount()} x {params.getColumnsAmount()}</Text>
-        <View style={styles.board}>
-          <MineField board={this.state.board} />
+      
+        <View style={styles.container}>
+          <Text style={styles.welcome}>Iniciando o Mines!</Text>
+          <Text style={styles.instructions}>Tamanho da grade: {params.getRowsAmount()} x {params.getColumnsAmount()}</Text>
+          <View style={styles.board}>
+            <MineField board={this.state.board} 
+                  onOpenField={this.onOpenField}/>
+          </View>
         </View>
-      </View>
     );
   }
 }
