@@ -10,7 +10,8 @@ import {
   wonGame,
   showMines,
   hadExplosion,
-  invertFlag
+  invertFlag,
+  flagsUsed
  } from './src/functions'
 export default class App extends Component {
   
@@ -44,30 +45,23 @@ export default class App extends Component {
     const board = cloneBoard(this.state.board)
     openField(board, row, column)
     const lost = hadExplosion(board)
-    const won = wonGame(board)
 
     if (lost) {
       showMines(board)
       Alert.alert('Perdeu!!!', 'Opps!!! Clicou aonde não devia!!')
     }
-    
-    if (won) {
-      Alert('Parabéns!', 'Se esquivou de todas as Minas! xD')
-    }
 
-    this.setState({board, lost, won})
+    this.setState({board, lost, won : isWinner(board)})
   }
 
   onSelectField = (row,column) => {
     const board = cloneBoard(this.state.board)
     invertFlag(board, row, column)
-    const won = wonGame(board)
-    if (won) {
-      Alert('Parabéns!', 'Se esquivou de todas as Minas! xD')
-    }
-
+    const won = isWinner(board)
     this.setState({board, won})
   }
+
+
   
   render() {
     return (
@@ -83,6 +77,14 @@ export default class App extends Component {
         </View>
     );
   }
+}
+
+const isWinner = (board) => {
+  const won = wonGame(board)
+  if (won) {
+    Alert('Parabéns!', 'Se esquivou de todas as Minas! xD')
+  }
+  return won
 }
 
 const styles = StyleSheet.create({
