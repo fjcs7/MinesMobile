@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import {StyleSheet, Text, View, Alert} from 'react-native';
 import params from './src/params'
 import MineField from './src/componentes/MineFields'
+import Header from './src/componentes/Header'
 import { 
   createMinedBoard, 
   cloneBoard,
@@ -18,6 +19,14 @@ export default class App extends Component {
   constructor(props){
     super(props)
     this.state = this.createState();
+  }
+
+  isWinner = (board) => {
+    const won = wonGame(board)
+    if (won) {
+      Alert('Parabéns!', 'Se esquivou de todas as Minas! xD')
+    }
+    return won
   }
 
   minesAmount = () => {
@@ -51,24 +60,24 @@ export default class App extends Component {
       Alert.alert('Perdeu!!!', 'Opps!!! Clicou aonde não devia!!')
     }
 
-    this.setState({board, lost, won : isWinner(board)})
+    this.setState({board, lost, won : () => isWinner(board)})
   }
 
   onSelectField = (row,column) => {
     const board = cloneBoard(this.state.board)
     invertFlag(board, row, column)
-    const won = isWinner(board)
-    this.setState({board, won})
+    this.setState({board, won: () => isWinner(board)})
   }
 
+  flagsLeft = () => this.minesAmount() - flagsUsed(this.state.board)
 
   
   render() {
     return (
       
         <View style={styles.container}>
-          <Text style={styles.welcome}>Iniciando o Mines!</Text>
-          <Text style={styles.instructions}>Tamanho da grade: {params.getRowsAmount()} x {params.getColumnsAmount()}</Text>
+          <Header flagsLeft={this.flagsLeft()} 
+                  onNewGame={()=> this.setState(this.createState())}/>
           <View style={styles.board}>
             <MineField board={this.state.board} 
                   onOpenField={this.onOpenField}
@@ -77,14 +86,6 @@ export default class App extends Component {
         </View>
     );
   }
-}
-
-const isWinner = (board) => {
-  const won = wonGame(board)
-  if (won) {
-    Alert('Parabéns!', 'Se esquivou de todas as Minas! xD')
-  }
-  return won
 }
 
 const styles = StyleSheet.create({

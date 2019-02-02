@@ -94,7 +94,7 @@ const invertFlag = (board, row, column) => {
     field.flagged = !field.flagged
 }
 
-const flagsUsed = board => fields(board).filter(filter.flagged).length
+const flagsUsed = board => fields(board).filter(f => f.flagged).length
 
 export { 
     createMinedBoard,
