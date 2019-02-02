@@ -9,7 +9,8 @@ import {
   openField,
   wonGame,
   showMines,
-  hadExplosion
+  hadExplosion,
+  invertFlag
  } from './src/functions'
 export default class App extends Component {
   
@@ -35,6 +36,11 @@ export default class App extends Component {
   }
 
   onOpenField = (row, column) => {
+    
+    if (this.state.lost){
+      return;
+    }
+    
     const board = cloneBoard(this.state.board)
     openField(board, row, column)
     const lost = hadExplosion(board)
@@ -44,12 +50,23 @@ export default class App extends Component {
       showMines(board)
       Alert.alert('Perdeu!!!', 'Opps!!! Clicou aonde não devia!!')
     }
-
+    
     if (won) {
       Alert('Parabéns!', 'Se esquivou de todas as Minas! xD')
     }
 
     this.setState({board, lost, won})
+  }
+
+  onSelectField = (row,column) => {
+    const board = cloneBoard(this.state.board)
+    invertFlag(board, row, column)
+    const won = wonGame(board)
+    if (won) {
+      Alert('Parabéns!', 'Se esquivou de todas as Minas! xD')
+    }
+
+    this.setState({board, won})
   }
   
   render() {
@@ -60,7 +77,8 @@ export default class App extends Component {
           <Text style={styles.instructions}>Tamanho da grade: {params.getRowsAmount()} x {params.getColumnsAmount()}</Text>
           <View style={styles.board}>
             <MineField board={this.state.board} 
-                  onOpenField={this.onOpenField}/>
+                  onOpenField={this.onOpenField}
+                  onSelectField={this.onSelectField} />
           </View>
         </View>
     );
